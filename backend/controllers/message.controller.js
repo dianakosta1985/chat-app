@@ -1,6 +1,8 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
+import OpenAI from "openai";
+//import openai from "../config/open-ai.js";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -61,4 +63,16 @@ export const getMessages = async (req, res) => {
     console.log("Error in getMessages controller: ", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
+};
+
+const getAssistant = async (msg) => {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const completion = await openai.chat.completions.create({
+    messages: [
+      { role: "user", content: msg || "You are a helpful assistant." },
+    ],
+    model: "gpt-3.5-turbo",
+  });
+  console.log("answear");
+  return completion.data.choices[0].message.content;
 };
