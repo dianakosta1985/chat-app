@@ -10,7 +10,10 @@ const useGetMessages = () => {
     const getMessages = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/messages/${selectedConversation._id}`);
+        const sendAllOrIndividual = selectedConversation
+          ? `/api/messages/${selectedConversation._id}`
+          : "/api/messages/getAll";
+        const res = await fetch(sendAllOrIndividual);
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         setMessages(data);
@@ -21,7 +24,8 @@ const useGetMessages = () => {
       }
     };
 
-    if (selectedConversation?._id) getMessages();
+    getMessages();
+    //if (selectedConversation?._id) getMessages();
   }, [selectedConversation?._id, setMessages]);
 
   return { messages, loading };
